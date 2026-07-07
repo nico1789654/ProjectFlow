@@ -296,37 +296,26 @@ textarea{resize:none;height:52px}input[type=range]{width:100%;accent-color:var(-
       <span style="font-size:20px;font-weight:800;letter-spacing:-.5px">Project<span style="color:#C0392B">Flow</span></span>
     </div>
     <div class="login-title">Connexion</div>
-    <div class="login-sub" id="login-sub">Entrez vos identifiants pour accéder à l'application</div>
+    <div class="login-sub" id="login-sub">Entrez vos identifiants pour accéder à votre espace de travail</div>
+    <div style="height:16px"></div>
     <div class="login-error" id="login-error"></div>
-    <!-- Config Supabase requise -->
-    <div id="login-no-config" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px 14px;font-size:12px;color:#78350f;margin-bottom:14px">
-      ⚠ Supabase n'est pas encore configuré.<br>
-      <span style="cursor:pointer;text-decoration:underline;font-weight:600" onclick="showLoginConfig()">Configurer maintenant →</span>
-    </div>
-    <!-- Config panel (masqué par défaut) -->
-    <div id="login-config-panel" style="display:none;background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">Configuration Supabase</div>
-      <div class="login-field"><label>URL du projet</label><input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co"></div>
-      <div class="login-field"><label>Clé anon publique</label><input type="text" id="cfg-key" placeholder="eyJhbGci..."></div>
-      <div class="login-field"><label>ID Workspace</label><input type="text" id="cfg-wid" placeholder="ws-monworkspace"></div>
-      <button class="login-btn" onclick="saveLoginConfig()" style="margin-top:0">Enregistrer la configuration</button>
-    </div>
-    <!-- Form login -->
     <div id="login-form">
       <div class="login-field">
         <label>Email</label>
-        <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('login-pwd').focus()">
+        <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="email"
+          onkeydown="if(event.key==='Enter')document.getElementById('login-pwd').focus()">
       </div>
       <div class="login-field">
         <label>Mot de passe</label>
-        <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()">
         <span class="login-forgot" onclick="doForgotPassword()">Mot de passe oublié ?</span>
       </div>
       <button class="login-btn" id="login-btn" onclick="doLogin()">Se connecter</button>
     </div>
-    <div class="login-sep">ou</div>
-    <button class="login-config-btn" onclick="toggleLoginConfig()">⚙ Configuration Supabase</button>
-    <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text3)">Accès réservé aux membres autorisés</div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--text3)">
+      Accès réservé aux membres autorisés
+    </div>
   </div>
 </div>
 
@@ -3351,13 +3340,23 @@ function renderTeamView(){
 // ─── Supabase ─────────────────────────────────────────────────────────────────
 // Config stored in localStorage (not in shared data)
 const SB_KEY='projectflow_supabase';
-let sbConfig=null; // {url, anonKey, workspaceId}
+let sbConfig=null;
 let sbClient=null;
 let sbChannel=null;
 let sbConnected=false;
 let sbSaving=false;
 
+// ── Configuration Supabase intégrée ──────────────────────────────────────────
+// Modifiez ces valeurs et re-uploadez index.html sur GitHub pour les mettre à jour
+const SB_HARDCODED={
+  url:         'https://cumeovqnratypngwjvdp.supabase.co',
+  anonKey:     'REMPLACER_PAR_VOTRE_CLE_ANON',
+  workspaceId: 'ws-projectflow'
+};
+
 function getSbConfig(){
+  // Config intégrée prioritaire — le localStorage sert de fallback
+  if(SB_HARDCODED.anonKey&&SB_HARDCODED.anonKey!=='REMPLACER_PAR_VOTRE_CLE_ANON')return SB_HARDCODED;
   try{const raw=localStorage.getItem(SB_KEY);return raw?JSON.parse(raw):null}catch{return null}
 }
 function saveSbConfig(cfg){localStorage.setItem(SB_KEY,JSON.stringify(cfg));}
