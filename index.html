@@ -2,7 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ProjectFlow">
 <title>ProjectFlow</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23C0392B'/%3E%3Crect x='4' y='5' width='24' height='7' rx='2' fill='%23fff'/%3E%3Crect x='4' y='5' width='7' height='7' fill='%23C0392B' opacity='.45'/%3E%3Crect x='15' y='5' width='7' height='7' fill='%23C0392B' opacity='.45'/%3E%3Crect x='10' y='14' width='18' height='7' rx='2' fill='%23fff' opacity='.88'/%3E%3Crect x='6' y='23' width='12' height='7' rx='2' fill='%23fff' opacity='.7'/%3E%3C/svg%3E">
 <style>
@@ -275,6 +278,125 @@ textarea{resize:none;height:52px}input[type=range]{width:100%;accent-color:var(-
 .ctx-item{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:7px;font-size:13px;cursor:pointer;color:var(--text);white-space:nowrap}
 .ctx-item:hover{background:var(--s2)}.ctx-item.disabled{opacity:.4;pointer-events:none}
 .ctx-sep{height:1px;background:var(--border);margin:4px 5px}
+/* ═══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — breakpoint 768px
+═══════════════════════════════════════════════════════ */
+.mobile-only{display:none!important}
+.desktop-only{display:flex}
+
+@media(max-width:768px){
+  /* Base */
+  body{font-size:15px;-webkit-text-size-adjust:100%}
+  .mobile-only{display:flex!important}
+  .desktop-only{display:none!important}
+
+  /* App shell — leave room for bottom nav */
+  #app{padding-bottom:60px}
+
+  /* Topbar mobile — compact */
+  .topbar{height:52px;padding:0 12px;gap:6px;position:sticky;top:0;z-index:40}
+  .topbar .btn-ghost.btn-sm:not(#btn-back){display:none}/* hide most topbar buttons */
+  #save-status{display:none}
+  #topbar-user span#topbar-user-name{display:none}
+  #btn-new-project{display:none!important}/* use FAB instead */
+
+  /* Bottom navigation bar */
+  #mobile-nav{
+    position:fixed;bottom:0;left:0;right:0;height:60px;
+    background:var(--surface);border-top:1px solid var(--border);
+    display:flex;align-items:stretch;z-index:50;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .mobile-nav-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;
+    transition:color .12s;border:none;background:none;font-family:inherit;
+    padding:6px 0;-webkit-tap-highlight-color:transparent;
+  }
+  .mobile-nav-item.active{color:var(--accent)}
+  .mobile-nav-item svg,.mobile-nav-item .nav-icon{font-size:22px;line-height:1}
+
+  /* FAB — floating action button */
+  #mobile-fab{
+    position:fixed;right:18px;bottom:76px;z-index:51;
+    width:52px;height:52px;border-radius:50%;
+    background:#C0392B;color:#fff;border:none;
+    font-size:26px;font-weight:300;line-height:1;
+    box-shadow:0 4px 16px rgba(192,57,43,.4);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .12s,box-shadow .12s;
+  }
+  #mobile-fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(192,57,43,.3)}
+
+  /* Dashboard */
+  .dash-wrap{padding:14px 14px 8px}
+  .dash-hero{padding:12px 0 10px}
+  .dash-hero-title{font-size:20px}
+  .dash-kpis{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+  .kpi-card{padding:12px 14px}
+  .kpi-val{font-size:24px}
+  .dash-tabs{gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dash-tabs::-webkit-scrollbar{display:none}
+  .dash-tab{padding:8px 14px;font-size:12px;white-space:nowrap;flex-shrink:0}
+  .projects-grid{grid-template-columns:1fr;gap:10px}
+
+  /* Inbox */
+  .inbox-wrap{grid-template-columns:1fr;gap:14px}
+
+  /* Views */
+  #v-project{flex-direction:column}
+  .sidebar{width:100%;height:auto;max-height:220px;border-right:none;border-bottom:1px solid var(--border);flex-shrink:0}
+  .sidebar.collapsed{max-height:0;border-bottom:none;overflow:hidden}
+  .sidebar-toggle{left:auto;right:12px;top:12px;transform:none;border-radius:8px;width:28px;height:28px}
+  .gantt-area{padding:10px}
+  .gantt-card{min-width:0;padding:10px}
+  .gantt-controls{flex-wrap:wrap;gap:5px}
+  .gantt-controls .btn{font-size:11px;padding:4px 8px}
+
+  /* Detail panel — full screen on mobile */
+  .detail-panel{width:100%;border-left:none;border-top:1px solid var(--border);top:auto;height:85vh;transform:translateY(100%)}
+  .detail-panel.open{transform:translateY(0)}
+  .detail-body{padding:12px 14px}
+  .detail-header{padding:12px 44px 12px 14px}
+
+  /* Modal — full screen on mobile */
+  .modal{width:100%!important;max-width:100%!important;margin:0;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh;overflow-y:auto;transform:translateY(0)}
+  .modal-backdrop{align-items:flex-end}
+  .modal-backdrop.open .modal{transform:translateY(0)}
+
+  /* Week view */
+  #v-week .dash-wrap,#v-week>div>div:last-child{padding:10px}
+  #week-content>div[style*="grid-template-columns:repeat(7"]{
+    display:flex!important;flex-direction:column!important;gap:10px!important;
+  }
+
+  /* Team view */
+  .team-inner{padding:14px}
+  #dash-team-content>div{grid-template-columns:1fr!important}
+
+  /* Concordance table — horizontal scroll */
+  .conc-wrap{overflow-x:auto}
+  .conc-toolbar{flex-wrap:wrap;gap:8px;padding:10px 12px}
+  .conc-table{min-width:700px}
+
+  /* Touch targets — minimum 44px */
+  .btn,.btn-sm,.btn-icon,.cl-item-head,.st-item,.inbox-item,.week-task-row,.team-card{
+    min-height:44px;
+  }
+  .gantt-bar{height:36px!important}
+  .gantt-todo{width:20px!important;height:20px!important}
+
+  /* Fix overflow on all views */
+  .view.active{overflow-y:auto}
+}
+
+/* iPhone notch / Dynamic Island safe areas */
+@supports(padding:max(0px)){
+  .topbar{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+  #mobile-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  #mobile-fab{bottom:max(76px,calc(60px + env(safe-area-inset-bottom) + 16px))}
+}
 </style>
 </head>
 <body>
@@ -369,7 +491,24 @@ textarea{resize:none;height:52px}input[type=range]{width:100%;accent-color:var(-
     <button class="btn btn-primary btn-sm" id="btn-new-project">+ Projet</button>
   </div>
 
-  <!-- Dashboard -->
+  <!-- Mobile bottom navigation -->
+  <div id="mobile-nav" class="mobile-only">
+    <button class="mobile-nav-item active" id="mnav-home" onclick="mobileNav('home')">
+      <span class="nav-icon">🏠</span><span>Accueil</span>
+    </button>
+    <button class="mobile-nav-item" id="mnav-week" onclick="mobileNav('week')">
+      <span class="nav-icon">📅</span><span>Semaine</span>
+    </button>
+    <button class="mobile-nav-item" id="mnav-team" onclick="mobileNav('team')">
+      <span class="nav-icon">👥</span><span>Équipe</span>
+    </button>
+    <button class="mobile-nav-item" id="mnav-config" onclick="openConfig()">
+      <span class="nav-icon">⚙</span><span>Config</span>
+    </button>
+  </div>
+
+  <!-- FAB — quick add task -->
+  <button id="mobile-fab" class="mobile-only" onclick="mobileFabAction()" title="Ajouter une tâche">+</button>
   <div class="view active" id="v-dashboard">
     <div class="dash-wrap">
       <!-- Hero -->
@@ -3031,9 +3170,9 @@ function setTopbarProject(on){
   document.getElementById('spacer').style.display=on?'none':'';
 }
 function showView(id){['v-dashboard','v-project','v-team','v-week'].forEach(v=>document.getElementById(v).classList.toggle('active',v===id))}
-function openProject(id){activeId=id;showView('v-project');setTopbarProject(true);renderProject()}
-function goToDashboard(){activeId=null;closeDetail();showView('v-dashboard');setTopbarProject(false);renderDashboard()}
-function openTeamView(){closeDetail();showView('v-team');setTopbarProject(false);renderTeamView()}
+function openProject(id){activeId=id;showView('v-project');setTopbarProject(true);renderProject();updateMobileNav('project');}
+function goToDashboard(){activeId=null;closeDetail();showView('v-dashboard');setTopbarProject(false);renderDashboard();updateMobileNav('dashboard');}
+function openTeamView(){closeDetail();showView('v-team');setTopbarProject(false);renderTeamView();updateMobileNav('team');}
 document.getElementById('btn-back').onclick=goToDashboard;
 document.getElementById('btn-new-project').onclick=()=>openModal('Nouveau projet',projectFormHTML(null));
 document.getElementById('btn-add-task').onclick=()=>{formSubtasks=[];openModal('Nouvelle tâche',taskFormHTML(null))};
@@ -3350,7 +3489,7 @@ let sbSaving=false;
 // Modifiez ces valeurs et re-uploadez index.html sur GitHub pour les mettre à jour
 const SB_HARDCODED={
   url:         'https://cumeovqnratypngwjvdp.supabase.co',
-  anonKey:     'sb_publishable_CK4lFB5rWvVjpzRFT2DtEg_5GNvIh2J',
+  anonKey:     'REMPLACER_PAR_VOTRE_CLE_ANON',
   workspaceId: 'ws-projectflow'
 };
 
@@ -3711,7 +3850,149 @@ async function pullFromSupabase(){
   }catch(e){console.warn('Pull error:',e)}
 }
 
-// ─── Persistence ──────────────────────────────────────────────────────────────
+// ─── Mobile ───────────────────────────────────────────────────────────────────
+const IS_MOBILE=()=>window.innerWidth<=768;
+
+window.mobileNav=function(tab){
+  document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('mnav-'+tab)?.classList.add('active');
+  if(tab==='home'){goToDashboard();}
+  else if(tab==='week'){openWeekView();}
+  else if(tab==='team'){openTeamView();}
+};
+
+window.mobileFabAction=function(){
+  // Context-aware FAB
+  if(activeId){
+    // In a project — add task to backlog
+    formSubtasks=[];openModal('Nouvelle tâche',taskFormHTML(null));
+  } else {
+    // On dashboard — quick add to inbox
+    const name=prompt('Nom de la tâche :');
+    if(!name?.trim())return;
+    inbox.push({id:uid(),name:name.trim()});
+    renderDashboard();scheduleSave();
+    // Switch to inbox tab
+    const inboxTab=document.querySelector('.dash-tab:nth-child(2)');
+    if(inboxTab)switchDashTab('inbox',inboxTab);
+  }
+};
+
+// Update mobile nav active state when view changes
+function updateMobileNav(view){
+  if(!IS_MOBILE())return;
+  document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
+  if(view==='dashboard')document.getElementById('mnav-home')?.classList.add('active');
+  else if(view==='week')document.getElementById('mnav-week')?.classList.add('active');
+  else if(view==='team')document.getElementById('mnav-team')?.classList.add('active');
+}
+
+// ─── Touch events for Gantt drag ─────────────────────────────────────────────
+function addTouchDrag(){
+  // Touch support for gantt bars (day/week mode)
+  document.querySelectorAll('.gantt-bar').forEach(bar=>{
+    let startX=0,startLeft=0,startW=0,moved=false;
+
+    bar.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1)return;
+      const t=e.touches[0];startX=t.clientX;
+      startLeft=parseFloat(bar.style.left)||0;
+      startW=parseFloat(bar.style.width)||0;
+      moved=false;
+    },{passive:true});
+
+    bar.addEventListener('touchmove',e=>{
+      if(e.touches.length!==1)return;
+      const t=e.touches[0];const dx=t.clientX-startX;
+      if(Math.abs(dx)>8){moved=true;e.preventDefault();}
+      if(!moved)return;
+      bar.style.left=Math.max(0,startLeft+dx)+'px';
+    },{passive:false});
+
+    bar.addEventListener('touchend',e=>{
+      if(!moved){openDetail(bar.dataset.id);return;}
+      // Save new position
+      const {pmin}=gRange();
+      const p=proj();const task=p?.tasks.find(t=>t.id===bar.dataset.id);
+      if(task){
+        task.startDate=startOfDay(x2d(Math.max(0,parseFloat(bar.style.left)),pmin));
+        renderProject();scheduleSave();
+      }
+    });
+  });
+
+  // Touch resize (right handle)
+  document.querySelectorAll('.gantt-resize').forEach(handle=>{
+    let startX=0,startW=0;
+    handle.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1)return;
+      startX=e.touches[0].clientX;
+      startW=parseFloat(handle.closest('.gantt-bar').style.width)||0;
+      e.stopPropagation();
+    },{passive:true});
+    handle.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      const dx=e.touches[0].clientX-startX;
+      const bar=handle.closest('.gantt-bar');
+      bar.style.width=Math.max(DW,startW+dx)+'px';
+    },{passive:false});
+    handle.addEventListener('touchend',()=>{
+      const bar=handle.closest('.gantt-bar');
+      const {pmin}=gRange();
+      const p=proj();const task=p?.tasks.find(t=>t.id===handle.dataset.id);
+      if(task){
+        task.estimatedDays=Math.max(1,Math.round(parseFloat(bar.style.width)/DW));
+        renderProject();scheduleSave();
+      }
+    });
+  });
+
+  // Touch for mgantt bars (global gantt)
+  document.querySelectorAll('.mgantt-bar').forEach(bar=>{
+    let startX=0,startLeft=0,moved=false;
+    bar.addEventListener('touchstart',e=>{
+      startX=e.touches[0].clientX;startLeft=parseFloat(bar.style.left)||0;moved=false;
+    },{passive:true});
+    bar.addEventListener('touchmove',e=>{
+      const dx=e.touches[0].clientX-startX;
+      if(Math.abs(dx)>8){moved=true;e.preventDefault();}
+      if(!moved)return;
+      bar.style.left=Math.max(0,startLeft+dx)+'px';
+    },{passive:false});
+    bar.addEventListener('touchend',e=>{
+      if(!moved){openGlobalTaskPopup(bar.dataset.tid,bar.dataset.pid);return;}
+      const params=_mganttParams;if(!params)return;
+      const {GW,pmin}=params;
+      const p=projects.find(pr=>pr.id===bar.dataset.pid);
+      const task=p?.tasks.find(t=>t.id===bar.dataset.tid);
+      if(task){
+        task.startDate=addDays(pmin,Math.round(parseFloat(bar.style.left)/GW));
+        scheduleSave();renderWeekView();
+      }
+    });
+  });
+}
+
+// Hook addTouchDrag after every gantt render
+const _origAttachGanttEvents=attachGanttEvents;
+function attachGanttEvents(){_origAttachGanttEvents();if(IS_MOBILE())addTouchDrag();}
+const _origAttachMganttBars=attachMganttBars;
+function attachMganttBars(){_origAttachMganttBars();if(IS_MOBILE())addTouchDrag();}
+
+// Week view on mobile — stack columns vertically instead of 7-col grid
+function applyMobileWeekLayout(){
+  if(!IS_MOBILE())return;
+  document.querySelectorAll('#week-content [style*="grid-template-columns:repeat(7"]').forEach(el=>{
+    el.style.display='flex';
+    el.style.flexDirection='column';
+    el.style.gap='10px';
+  });
+}
+const _origRenderWeekView=renderWeekView;
+function renderWeekView(){
+  _origRenderWeekView();
+  if(IS_MOBILE())setTimeout(applyMobileWeekLayout,0);
+}
 const SK='projectflow_v1';
 let saveTimer=null;
 
