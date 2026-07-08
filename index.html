@@ -278,124 +278,171 @@ textarea{resize:none;height:52px}input[type=range]{width:100%;accent-color:var(-
 .ctx-item{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:7px;font-size:13px;cursor:pointer;color:var(--text);white-space:nowrap}
 .ctx-item:hover{background:var(--s2)}.ctx-item.disabled{opacity:.4;pointer-events:none}
 .ctx-sep{height:1px;background:var(--border);margin:4px 5px}
-/* ═══════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — breakpoint 768px
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   MOBILE — max-width 768px
+═══════════════════════════════════════════════ */
 .mobile-only{display:none!important}
-.desktop-only{display:flex}
 
 @media(max-width:768px){
-  /* Base */
-  body{font-size:15px;-webkit-text-size-adjust:100%}
   .mobile-only{display:flex!important}
   .desktop-only{display:none!important}
 
-  /* App shell — leave room for bottom nav */
-  #app{padding-bottom:60px}
+  /* Base */
+  body{-webkit-text-size-adjust:100%;overflow-x:hidden}
+  *{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
 
-  /* Topbar mobile — compact */
-  .topbar{height:52px;padding:0 12px;gap:6px;position:sticky;top:0;z-index:40}
-  .topbar .btn-ghost.btn-sm:not(#btn-back){display:none}/* hide most topbar buttons */
-  #save-status{display:none}
+  /* Shell */
+  #app{height:calc(100dvh - 60px - env(safe-area-inset-top,0px));overflow:hidden}
+  .view.active{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+  /* Topbar */
+  .topbar{
+    height:calc(52px + env(safe-area-inset-top,0px));
+    padding-top:env(safe-area-inset-top,0px);
+    padding-left:max(12px,env(safe-area-inset-left));
+    padding-right:max(12px,env(safe-area-inset-right));
+    gap:6px;position:sticky;top:0;z-index:40;overflow:hidden;flex-wrap:nowrap;
+  }
+  /* Hide desktop-only topbar items */
+  #save-status,#topbar-div,#topbar-prog,
+  [onclick="exportData()"],[onclick*="import-input"],
+  [onclick="openSyncModal()"],[onclick="openTeamView()"],
+  [onclick="openConfig()"],#btn-new-project,
+  .topbar>div[style*="width:1px"]{display:none!important}
   #topbar-user span#topbar-user-name{display:none}
-  #btn-new-project{display:none!important}/* use FAB instead */
 
-  /* Bottom navigation bar */
+  /* Bottom nav */
   #mobile-nav{
-    position:fixed;bottom:0;left:0;right:0;height:60px;
+    position:fixed;bottom:0;left:0;right:0;
+    height:calc(60px + env(safe-area-inset-bottom,0px));
+    padding-bottom:env(safe-area-inset-bottom,0px);
     background:var(--surface);border-top:1px solid var(--border);
-    display:flex;align-items:stretch;z-index:50;
-    padding-bottom:env(safe-area-inset-bottom);
+    display:flex!important;align-items:stretch;z-index:50;
   }
   .mobile-nav-item{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;
-    transition:color .12s;border:none;background:none;font-family:inherit;
-    padding:6px 0;-webkit-tap-highlight-color:transparent;
+    flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:2px;border:none;background:none;font-family:inherit;
+    color:var(--text3);font-size:10px;font-weight:500;
+    padding:4px 0;cursor:pointer;
   }
   .mobile-nav-item.active{color:var(--accent)}
-  .mobile-nav-item svg,.mobile-nav-item .nav-icon{font-size:22px;line-height:1}
+  .mobile-nav-item .nav-icon{font-size:20px;line-height:1.2}
 
-  /* FAB — floating action button */
+  /* FAB */
   #mobile-fab{
-    position:fixed;right:18px;bottom:76px;z-index:51;
-    width:52px;height:52px;border-radius:50%;
-    background:#C0392B;color:#fff;border:none;
-    font-size:26px;font-weight:300;line-height:1;
-    box-shadow:0 4px 16px rgba(192,57,43,.4);
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    -webkit-tap-highlight-color:transparent;
-    transition:transform .12s,box-shadow .12s;
+    position:fixed;right:16px;
+    bottom:calc(60px + env(safe-area-inset-bottom,0px) + 14px);
+    z-index:51;width:52px;height:52px;border-radius:50%;
+    background:#C0392B;color:#fff;border:none;font-size:28px;line-height:1;
+    box-shadow:0 4px 18px rgba(192,57,43,.45);
+    display:flex!important;align-items:center;justify-content:center;cursor:pointer;
   }
-  #mobile-fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(192,57,43,.3)}
+  #mobile-fab:active{transform:scale(.9)}
+
+  /* Inputs — 16px prevents iOS auto-zoom */
+  input,select,textarea{font-size:16px!important;min-height:44px}
+  input[type=range]{min-height:28px}
 
   /* Dashboard */
-  .dash-wrap{padding:14px 14px 8px}
-  .dash-hero{padding:12px 0 10px}
-  .dash-hero-title{font-size:20px}
-  .dash-kpis{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
-  .kpi-card{padding:12px 14px}
-  .kpi-val{font-size:24px}
-  .dash-tabs{gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dash-wrap{padding:12px 12px 0;max-width:100%}
+  .dash-hero{padding:8px 0 6px;text-align:left}
+  .dash-hero-title{font-size:18px}
+  .dash-hero-sub{font-size:11px}
+  .dash-kpis{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .kpi-card{padding:10px 12px}
+  .kpi-val{font-size:22px}
+  .kpi-label{font-size:11px}
+  .kpi-hint{font-size:10px}
+  .dash-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-bottom:2px solid var(--border)}
   .dash-tabs::-webkit-scrollbar{display:none}
   .dash-tab{padding:8px 14px;font-size:12px;white-space:nowrap;flex-shrink:0}
   .projects-grid{grid-template-columns:1fr;gap:10px}
+  .project-card{padding:12px 14px}
 
   /* Inbox */
-  .inbox-wrap{grid-template-columns:1fr;gap:14px}
+  .inbox-wrap{grid-template-columns:1fr;gap:12px}
 
-  /* Views */
+  /* Project view — sidebar on top, gantt below */
   #v-project{flex-direction:column}
-  .sidebar{width:100%;height:auto;max-height:220px;border-right:none;border-bottom:1px solid var(--border);flex-shrink:0}
-  .sidebar.collapsed{max-height:0;border-bottom:none;overflow:hidden}
-  .sidebar-toggle{left:auto;right:12px;top:12px;transform:none;border-radius:8px;width:28px;height:28px}
-  .gantt-area{padding:10px}
-  .gantt-card{min-width:0;padding:10px}
-  .gantt-controls{flex-wrap:wrap;gap:5px}
-  .gantt-controls .btn{font-size:11px;padding:4px 8px}
+  .sidebar{
+    width:100%;max-height:190px;
+    border-right:none;border-bottom:1px solid var(--border);
+    flex-shrink:0;overflow-y:auto;
+  }
+  .sidebar.collapsed{max-height:0;overflow:hidden;border-bottom:none}
+  .gantt-area{padding:8px;overflow:auto;-webkit-overflow-scrolling:touch}
+  .gantt-card{padding:10px;min-width:0;border-radius:10px}
+  .gantt-controls{flex-wrap:wrap;gap:5px;margin-bottom:8px}
+  .gantt-controls .btn{font-size:11px;padding:4px 8px;min-height:32px}
+  /* Gantt inner scrolls horizontally */
+  #gantt-inner{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Bigger touch targets on bars */
+  .gantt-bar{height:34px!important;border-radius:8px!important}
+  .gantt-resize{width:14px!important}
+  .gantt-todo{width:22px!important;height:22px!important}
+  .gantt-row{height:46px}
+  .gantt-body-row{height:46px}
 
-  /* Detail panel — full screen on mobile */
-  .detail-panel{width:100%;border-left:none;border-top:1px solid var(--border);top:auto;height:85vh;transform:translateY(100%)}
+  /* Detail panel — slides up from bottom */
+  .detail-panel{
+    width:100%;border-left:none;
+    top:auto;bottom:0;
+    height:90dvh;
+    transform:translateY(100%);
+    border-radius:18px 18px 0 0;
+    box-shadow:0 -6px 32px rgba(0,0,0,.15);
+  }
   .detail-panel.open{transform:translateY(0)}
-  .detail-body{padding:12px 14px}
-  .detail-header{padding:12px 44px 12px 14px}
+  .detail-header{padding:12px 44px 10px 14px}
+  .detail-body{padding:12px 14px;gap:12px}
+  .detail-footer{padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  .detail-select{min-height:40px;font-size:15px}
+  .dp-slider{height:10px}
+  .dp-slider::-webkit-slider-thumb{width:26px;height:26px}
 
-  /* Modal — full screen on mobile */
-  .modal{width:100%!important;max-width:100%!important;margin:0;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh;overflow-y:auto;transform:translateY(0)}
+  /* Modales — slide up from bottom */
   .modal-backdrop{align-items:flex-end}
-  .modal-backdrop.open .modal{transform:translateY(0)}
-
-  /* Week view */
-  #v-week .dash-wrap,#v-week>div>div:last-child{padding:10px}
-  #week-content>div[style*="grid-template-columns:repeat(7"]{
-    display:flex!important;flex-direction:column!important;gap:10px!important;
+  .modal{
+    width:100%!important;max-width:100%!important;
+    margin:0;
+    border-radius:18px 18px 0 0;
+    position:fixed;bottom:0;left:0;right:0;
+    max-height:92dvh;overflow-y:auto;
+    padding-bottom:env(safe-area-inset-bottom,0px);
   }
 
-  /* Team view */
-  .team-inner{padding:14px}
-  #dash-team-content>div{grid-template-columns:1fr!important}
-
-  /* Concordance table — horizontal scroll */
-  .conc-wrap{overflow-x:auto}
-  .conc-toolbar{flex-wrap:wrap;gap:8px;padding:10px 12px}
-  .conc-table{min-width:700px}
-
-  /* Touch targets — minimum 44px */
-  .btn,.btn-sm,.btn-icon,.cl-item-head,.st-item,.inbox-item,.week-task-row,.team-card{
-    min-height:44px;
+  /* Week view header */
+  #v-week>div>div:first-child{
+    padding:10px 12px 8px;flex-wrap:wrap;gap:6px;
   }
-  .gantt-bar{height:36px!important}
-  .gantt-todo{width:20px!important;height:20px!important}
+  #v-week>div>div:first-child>div:first-child{width:100%;font-size:13px}
+  #v-week>div>div:first-child>div:last-child{
+    flex-wrap:wrap;gap:5px;margin-left:0!important;width:100%
+  }
+  #v-week>div>div:first-child .btn{font-size:11px;padding:5px 9px;min-height:34px}
+  #week-content{padding:10px 12px}
 
-  /* Fix overflow on all views */
-  .view.active{overflow-y:auto}
-}
+  /* Team */
+  .team-inner{padding:12px}
+  .team-grid{grid-template-columns:1fr}
+  .team-card{padding:11px 13px}
 
-/* iPhone notch / Dynamic Island safe areas */
-@supports(padding:max(0px)){
-  .topbar{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
-  #mobile-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
-  #mobile-fab{bottom:max(76px,calc(60px + env(safe-area-inset-bottom) + 16px))}
+  /* Concordance */
+  .conc-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .conc-table{min-width:580px;font-size:12px}
+  .conc-toolbar{flex-wrap:wrap;gap:7px;padding:10px 12px}
+
+  /* Touch targets */
+  .btn{min-height:40px}
+  .btn-sm{min-height:36px}
+  .cl-item-head{min-height:46px;padding:10px 12px}
+  .st-item{min-height:44px;padding:8px 10px}
+  .inbox-item{min-height:44px}
+  .task-card{padding:10px 12px}
+
+  /* Context menu */
+  #ctx-menu{bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);top:auto;right:12px;left:12px;min-width:0}
 }
 </style>
 </head>
