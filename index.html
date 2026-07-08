@@ -1080,15 +1080,6 @@ window.submitTask=function(id){
 };
 
 // ─── Project form ─────────────────────────────────────────────────────────────
-function projectFormHTML(p){
-  return`<div class="field"><label class="field-label">Nom du projet</label><input type="text" id="fn" value="${p?p.name:''}" placeholder="Ex: Refonte site web"></div>
-<div class="field"><label class="field-label">Description</label><textarea id="fd" placeholder="Description courte…">${p?p.description:''}</textarea></div>
-<div class="field-row">
-  <div class="field"><label class="field-label">Statut</label><select id="fs">${['À démarrer','En cours','En pause','Terminé'].map(s=>`<option${p&&p.status===s?' selected':''}>${s}</option>`).join('')}</select></div>
-  <div class="field"><label class="field-label">Couleur</label>${swatches(p?p.color:'blue','fc')}</div>
-</div>
-<div class="form-actions"><button class="btn" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="submitProject(${p?`'${p.id}'`:'null'})">${p?'Mettre à jour':'Créer'}</button></div>`;
-}
 // ─── Project categories & ID ──────────────────────────────────────────────────
 let projectCategories=[
   {id:'INF',label:'Infrastructure'},
@@ -1444,10 +1435,11 @@ function attachMganttBars(){
       document.body.style.cursor='col-resize';
     });
   });
+  // Touch support on mobile
+  if(IS_MOBILE())addTouchDrag();
 }
 
 document.addEventListener('mousemove',e=>{
-  const params=_mganttParams;if(!params)return;
   const {GW,pmin}=params;
 
   // Task row reorder
@@ -3098,6 +3090,8 @@ function attachGanttEvents(){
       document.body.style.cursor='grabbing';
     });
   });
+  // Touch support on mobile
+  if(IS_MOBILE())addTouchDrag();
 }
 
 // Reorder logic
@@ -4020,26 +4014,9 @@ function addTouchDrag(){
   });
 }
 
-// Hook addTouchDrag after every gantt render
-const _origAttachGanttEvents=attachGanttEvents;
-function attachGanttEvents(){_origAttachGanttEvents();if(IS_MOBILE())addTouchDrag();}
-const _origAttachMganttBars=attachMganttBars;
-function attachMganttBars(){_origAttachMganttBars();if(IS_MOBILE())addTouchDrag();}
+// Touch drag is called directly from attachGanttEvents and attachMganttBars (no wrapper needed)
+// Week mobile layout applied via CSS only (overflow-x:auto on #gantt-inner)
 
-// Week view on mobile — stack columns vertically instead of 7-col grid
-function applyMobileWeekLayout(){
-  if(!IS_MOBILE())return;
-  document.querySelectorAll('#week-content [style*="grid-template-columns:repeat(7"]').forEach(el=>{
-    el.style.display='flex';
-    el.style.flexDirection='column';
-    el.style.gap='10px';
-  });
-}
-const _origRenderWeekView=renderWeekView;
-function renderWeekView(){
-  _origRenderWeekView();
-  if(IS_MOBILE())setTimeout(applyMobileWeekLayout,0);
-}
 const SK='projectflow_v1';
 let saveTimer=null;
 
