@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PF Inbox">
+<title>ProjectFlow — Inbox</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f6f3;--surface:#fff;--s2:#f0efe9;--border:#e3e1d9;--border2:#cccac0;--text:#1c1b18;--text2:#6b6960;--text3:#a8a69e;--accent:#2563eb;--red:#C0392B}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column}
+
+/* ── Login ── */
+#login{display:flex;flex:1;align-items:center;justify-content:center;padding:24px}
+.login-card{background:var(--surface);border-radius:20px;border:1px solid var(--border);padding:32px 24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:24px}
+.logo-text{font-size:22px;font-weight:800}
+.logo-text span{color:var(--red)}
+.login-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+.field input{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--border2);font-size:16px;font-family:inherit;background:var(--surface);color:var(--text);outline:none}
+.field input:focus{border-color:var(--accent)}
+.btn-login{width:100%;padding:14px;border-radius:12px;border:none;background:var(--text);color:#fff;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:4px}
+.btn-login:active{opacity:.85}
+.btn-login:disabled{opacity:.5}
+.error-box{background:#fee2e2;border:1px solid #fca5a5;color:#7f1d1d;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none}
+.error-box.show{display:block}
+.forgot{text-align:center;margin-top:14px;font-size:13px;color:var(--accent);cursor:pointer}
+
+/* ── App ── */
+#app{display:none;flex-direction:column;flex:1;min-height:100dvh}
+
+/* Header */
+.header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:env(safe-area-inset-top,0px) 16px 0;
+  flex-shrink:0;
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:52px}
+.header-logo{font-size:16px;font-weight:800}
+.header-logo span{color:var(--red)}
+.header-user{display:flex;align-items:center;gap:8px}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--s2);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2)}
+.btn-out{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:4px}
+
+/* Main */
+.main{flex:1;padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+
+/* Quick add */
+.quick-add{background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.quick-add-top{padding:14px 16px 0}
+.quick-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quick-input{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--border2);font-size:16px;font-family:inherit;background:var(--s2);color:var(--text);outline:none;resize:none;height:56px}
+.quick-input:focus{border-color:var(--accent);background:var(--surface)}
+.quick-actions{padding:10px 12px;display:flex;gap:8px;align-items:center}
+.project-select{flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);outline:none}
+.btn-add{padding:10px 18px;border-radius:10px;border:none;background:var(--red);color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;flex-shrink:0}
+.btn-add:active{opacity:.85}
+.btn-add:disabled{opacity:.5}
+
+/* Tasks list */
+.section-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;position:relative}
+.task-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.task-check.done{background:#22c55e;border-color:#22c55e}
+.task-info{flex:1;min-width:0}
+.task-name{font-size:15px;font-weight:500;line-height:1.3;margin-bottom:4px}
+.task-name.done{text-decoration:line-through;color:var(--text3)}
+.task-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.task-proj{font-size:12px;color:var(--text3)}
+.task-time{font-size:11px;color:var(--text3)}
+.task-del{position:absolute;top:10px;right:10px;background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;padding:4px;line-height:1}
+.task-del:active{color:#ef4444}
+.empty{text-align:center;padding:32px 16px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-text{font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.empty-sub{font-size:13px}
+
+/* Success toast */
+#toast{
+  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;
+  font-size:13px;font-weight:500;opacity:0;transition:all .25s;
+  pointer-events:none;white-space:nowrap;z-index:100;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Status badge */
+.badge{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login">
+  <div class="login-card">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 30 30">
+        <rect width="30" height="30" rx="7" fill="#C0392B"/>
+        <rect x="4" y="5" width="22" height="6" rx="2" fill="#fff"/>
+        <rect x="4" y="5" width="6" height="6" fill="#C0392B" opacity=".45"/>
+        <rect x="14" y="5" width="6" height="6" fill="#C0392B" opacity=".45"/>
+        <rect x="9" y="14" width="17" height="6" rx="2" fill="#fff" opacity=".88"/>
+        <rect x="6" y="23" width="11" height="6" rx="2" fill="#fff" opacity=".7"/>
+      </svg>
+      <div class="logo-text">Project<span>Flow</span></div>
+    </div>
+    <div class="login-sub">Saisie rapide de tâches</div>
+    <div class="error-box" id="err"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="votre@email.com" autocomplete="email" inputmode="email"
+        onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()">
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="pwd" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="btn-login" id="login-btn" onclick="login()">Se connecter</button>
+    <div class="forgot" onclick="forgotPwd()">Mot de passe oublié ?</div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-logo">Project<span>Flow</span> <span style="font-weight:400;font-size:13px;color:var(--text2)">Inbox</span></div>
+      <div class="header-user">
+        <div class="user-avatar" id="user-av">?</div>
+        <button class="btn-out" onclick="logout()" title="Déconnexion">⎋</button>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <!-- Quick add -->
+    <div class="quick-add">
+      <div class="quick-add-top">
+        <div class="quick-label">Nouvelle tâche</div>
+        <textarea class="quick-input" id="task-input" placeholder="Nom de la tâche…" rows="2"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addTask()}"></textarea>
+      </div>
+      <div class="quick-actions">
+        <select class="project-select" id="proj-select">
+          <option value="">📥 Tâches en vrac</option>
+        </select>
+        <button class="btn-add" id="add-btn" onclick="addTask()">＋ Ajouter</button>
+      </div>
+    </div>
+
+    <!-- Inbox tasks -->
+    <div id="inbox-section">
+      <div class="section-title">
+        <span>📥 En vrac <span id="inbox-count" style="color:var(--text3);font-weight:400"></span></span>
+      </div>
+      <div class="task-list" id="inbox-list">
+        <div class="empty" id="inbox-empty">
+          <div class="empty-icon">📋</div>
+          <div class="empty-text">Aucune tâche en vrac</div>
+          <div class="empty-sub">Ajoutez une tâche ci-dessus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent project tasks -->
+    <div id="proj-section" style="margin-top:20px;display:none">
+      <div class="section-title">
+        <span>✅ Ajoutées au projet <span id="proj-section-name"></span></span>
+      </div>
+      <div class="task-list" id="proj-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Config Supabase — MÊME config que l'app principale ──────────────────
+const SB_URL  = 'https://cumeovqnratypngwjvdp.supabase.co';
+const SB_KEY  = 'REMPLACER_PAR_VOTRE_CLE_ANON';
+const WS_ID   = 'ws-projectflow';
+const AUTH_KEY= 'pf_auth'; // partagé avec l'app principale
+
+// ── État ──────────────────────────────────────────────────────────────────
+let token=null, userData=null, wsData=null;
+
+// ── Utils ─────────────────────────────────────────────────────────────────
+function uid(){return Math.random().toString(36).slice(2,9)}
+function toast(msg,dur=2200){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+function showErr(msg){
+  const el=document.getElementById('err');
+  el.textContent=msg;el.classList.add('show');
+}
+function clearErr(){document.getElementById('err').classList.remove('show')}
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+async function sbFetch(path,opts={}){
+  const res=await fetch(SB_URL+path,{
+    ...opts,
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+(token||SB_KEY),
+      'Content-Type':'application/json',
+      ...(opts.headers||{})
+    }
+  });
+  return res;
+}
+
+async function login(){
+  clearErr();
+  const email=document.getElementById('email').value.trim();
+  const pwd=document.getElementById('pwd').value;
+  if(!email||!pwd){showErr('Email et mot de passe requis.');return;}
+  const btn=document.getElementById('login-btn');
+  btn.disabled=true;btn.textContent='Connexion…';
+  try{
+    const res=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pwd})
+    });
+    const d=await res.json();
+    if(!res.ok)throw new Error(d.error_description||'Identifiants incorrects');
+    token=d.access_token;
+    userData={id:d.user.id,email:d.user.email};
+    // Check membership
+    const mr=await sbFetch(`/rest/v1/workspace_members?workspace_id=eq.${WS_ID}&select=workspace_id`);
+    const md=await mr.json();
+    if(!Array.isArray(md)||md.length===0)throw new Error('Compte non autorisé pour ce workspace.');
+    // Save auth (same key as main app)
+    localStorage.setItem(AUTH_KEY,JSON.stringify({token,refreshToken:d.refresh_token,user:userData}));
+    await loadWorkspace();
+    showApp();
+  }catch(e){
+    showErr(e.message);
+    btn.disabled=false;btn.textContent='Se connecter';
+  }
+}
+
+async function forgotPwd(){
+  const email=document.getElementById('email').value.trim();
+  if(!email){showErr('Entrez votre email.');return;}
+  await fetch(SB_URL+'/auth/v1/recover',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email})
+  });
+  showErr('Email envoyé si le compte existe.');
+}
+
+function logout(){
+  if(!confirm('Se déconnecter ?'))return;
+  localStorage.removeItem(AUTH_KEY);
+  token=null;userData=null;wsData=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('login-btn').disabled=false;
+  document.getElementById('login-btn').textContent='Se connecter';
+}
+
+// ── Workspace data ────────────────────────────────────────────────────────
+async function loadWorkspace(){
+  const res=await sbFetch(`/rest/v1/workspaces?id=eq.${WS_ID}&select=data`);
+  const rows=await res.json();
+  if(rows&&rows.length>0){
+    wsData=typeof rows[0].data==='string'?JSON.parse(rows[0].data):rows[0].data;
+  } else {
+    wsData={projects:[],inbox:[],members:[]};
+  }
+  if(!wsData.inbox)wsData.inbox=[];
+  if(!wsData.projects)wsData.projects=[];
+}
+
+async function saveWorkspace(){
+  await sbFetch(`/rest/v1/workspaces?on_conflict=id`,{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:WS_ID,data:JSON.stringify(wsData),updated_at:new Date().toISOString()})
+  });
+}
+
+// ── App UI ────────────────────────────────────────────────────────────────
+function showApp(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('user-av').textContent=(userData.email||'?')[0].toUpperCase();
+  renderProjectSelect();
+  renderInbox();
+}
+
+function renderProjectSelect(){
+  const sel=document.getElementById('proj-select');
+  sel.innerHTML='<option value="">📥 Tâches en vrac</option>';
+  (wsData.projects||[]).forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.id;
+    const id=p.projectId?`[${p.projectId}] `:'';
+    opt.textContent=`📁 ${id}${p.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+function renderInbox(){
+  const list=document.getElementById('inbox-list');
+  const empty=document.getElementById('inbox-empty');
+  const count=document.getElementById('inbox-count');
+  const items=wsData.inbox||[];
+  count.textContent=items.length?`(${items.length})`:'';
+  empty.style.display=items.length?'none':'block';
+  // Remove old items
+  [...list.querySelectorAll('.task-item')].forEach(el=>el.remove());
+  // Show last 20, newest first
+  [...items].reverse().slice(0,20).forEach(task=>{
+    const el=document.createElement('div');
+    el.className='task-item';
+    el.innerHTML=`
+      <div class="task-name" style="flex:1;font-size:15px;font-weight:500;line-height:1.35;padding-right:28px">${task.name}</div>
+      <button class="task-del" onclick="deleteInbox('${task.id}')">×</button>`;
+    list.appendChild(el);
+  });
+}
+
+async function addTask(){
+  const input=document.getElementById('task-input');
+  const name=input.value.trim();
+  if(!name)return;
+  const projId=document.getElementById('proj-select').value;
+  const btn=document.getElementById('add-btn');
+  btn.disabled=true;
+  try{
+    if(!projId){
+      // Add to inbox
+      if(!wsData.inbox)wsData.inbox=[];
+      wsData.inbox.push({id:uid(),name});
+    } else {
+      // Add to project backlog
+      const proj=wsData.projects.find(p=>p.id===projId);
+      if(proj){
+        if(!proj.tasks)proj.tasks=[];
+        proj.tasks.push({
+          id:uid(),name,status:'À faire',progress:0,
+          priority:'Moyenne',estimatedDays:3,startDate:null,
+          color:proj.color||'blue',checklist:null,subtasks:[],
+          owners:[],startHour:8,endHour:18,note:''
+        });
+      }
+    }
+    await saveWorkspace();
+    input.value='';
+    if(!projId){
+      renderInbox();
+      toast(`✅ "${name}" ajouté à l'inbox`);
+    } else {
+      const proj=wsData.projects.find(p=>p.id===projId);
+      toast(`✅ "${name}" ajouté à ${proj?.name||'projet'}`);
+    }
+  }catch(e){
+    toast('❌ Erreur — vérifiez la connexion');
+  }
+  btn.disabled=false;
+  input.focus();
+}
+
+async function deleteInbox(id){
+  wsData.inbox=wsData.inbox.filter(t=>t.id!==id);
+  renderInbox();
+  try{await saveWorkspace();}catch{}
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────
+(async function boot(){
+  if(SB_KEY==='REMPLACER_PAR_VOTRE_CLE_ANON'){
+    showErr('⚙ Configurez la clé Supabase dans le fichier mobile.html');
+    return;
+  }
+  // Try to restore session shared with main app
+  try{
+    const saved=localStorage.getItem(AUTH_KEY);
+    if(saved){
+      const s=JSON.parse(saved);
+      if(s.token){
+        // Verify token
+        const res=await fetch(SB_URL+'/auth/v1/user',{
+          headers:{'apikey':SB_KEY,'Authorization':'Bearer '+s.token}
+        });
+        if(res.ok){
+          token=s.token;
+          userData=s.user||{email:''};
+          await loadWorkspace();
+          showApp();
+          return;
+        }
+      }
+    }
+  }catch(e){}
+  // Show login
+})();
+</script>
+</body>
+</html>
