@@ -3349,7 +3349,7 @@ const SB_HARDCODED={
 
 function getSbConfig(){
   // Config intégrée prioritaire — le localStorage sert de fallback
-  if(SB_HARDCODED.anonKey&&SB_HARDCODED.anonKey!=='REMPLACER_PAR_VOTRE_CLE_ANON')return SB_HARDCODED;
+  if(SB_HARDCODED.anonKey&&SB_HARDCODED.anonKey!=='sb_publishable_CK4lFB5rWvVjpzRFT2DtEg_5GNvIh2J')return SB_HARDCODED;
   try{const raw=localStorage.getItem(SB_KEY);return raw?JSON.parse(raw):null}catch{return null}
 }
 function saveSbConfig(cfg){localStorage.setItem(SB_KEY,JSON.stringify(cfg));}
